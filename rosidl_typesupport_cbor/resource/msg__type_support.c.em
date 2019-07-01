@@ -190,27 +190,35 @@ for index, field in enumerate(spec.fields):
 size_t @(function_prefix)__@(spec.base_type.type)_serialize(const void* ros_message, char* buffer, size_t buffer_size) {
 @{
 print("    const %s__%s__%s* msg = ros_message;" % (spec.base_type.pkg_name, subfolder, spec.base_type.type));
-print("    size_t ret = 0;");
-print("    cbor_stream_t stream;")
-print("    cbor_init(&stream, (unsigned char*)buffer, buffer_size);")
-print("    cbor_clear(&stream);")
+//print("    size_t ret = 0;");
+//print("    cbor_stream_t stream;")
+//print("    cbor_init(&stream, (unsigned char*)buffer, buffer_size);")
+//print("    cbor_clear(&stream);")
+print("    CborEncoder enc;")
+print("    cbor_encoder_init(&enc, (uint8_t*)buffer, buffer_size, 0);")
 for index, field in enumerate(spec.fields):
     if field.type.is_primitive_type() and not field.type.is_array:
         if field.type.type == "string":
-            print("    ret += cbor_serialize_byte_stringl(&stream, msg->%s.data, msg->%s.size);" % (field.name, field.name));
+            //print("    ret += cbor_serialize_byte_stringl(&stream, msg->%s.data, msg->%s.size);" % (field.name, field.name));
+            print("    cbor_encode_byte_string(&enc, msg->%s.data, msg->%s.size);" % (field.name, field.name));
         elif field.type.type == "int32":
-            print("    ret += cbor_serialize_int(&stream, msg->%s);" % field.name);
+            //print("    ret += cbor_serialize_int(&stream, msg->%s);" % field.name);
+            print("    cbor_encode_int(&enc, (int64_t)msg->%s);" % field.name);
         elif field.type.type == "uint32":
-            print("    ret += cbor_serialize_int(&stream, (int)msg->%s);" % field.name);
+            //print("    ret += cbor_serialize_int(&stream, (int)msg->%s);" % field.name);
+            print("    cbor_encode_uint(&enc, (uint64_t)msg->%s);" % field.name);
         elif field.type.type == "int64":
-            print("    ret += cbor_serialize_int64_t(&stream, msg->%s);" % field.name);
+            //print("    ret += cbor_serialize_int64_t(&stream, msg->%s);" % field.name);
+            print("    cbor_encode_int(&enc, msg->%s);" % field.name);
         elif field.type.type == "uint64":
-            print("    ret += cbor_serialize_uint64_t(&stream, msg->%s);" % field.name);
+            //print("    ret += cbor_serialize_uint64_t(&stream, msg->%s);" % field.name);
+            print("    cbor_encode_uint(&enc, msg->%s);" % field.name);
         else:
             print("    (void)msg;// msg->%s : (%s) NOT SUPPORTED !" % (field.name, field.type.type));
     else:
         print("    (void)msg;// msg->%s : NOT SUPPORTED !" % field.name);
-print("    return ret;");
+//print("    return ret;");
+print("    return cbor_encoder_get_buffer_size(&enc, (uint8_t*)buffer);");
 }@
 }
 
@@ -222,23 +230,41 @@ size_t @(function_prefix)__@(spec.base_type.type)_deserialize(void* ros_message,
 @{
 print("    %s__%s__%s* msg = ros_message;" % (spec.base_type.pkg_name, subfolder, spec.base_type.type));
 print("    size_t ret = 0;");
-print("    cbor_stream_t stream;")
-print("    cbor_init(&stream, (unsigned char*)buffer, buffer_size);")
-print("    stream.pos = buffer_size;")
+//print("    cbor_stream_t stream;")
+//print("    cbor_init(&stream, (unsigned char*)buffer, buffer_size);")
+//print("    stream.pos = buffer_size;")
+print("    CborParser parser;")
+print("    CborValue value;")
+print("    cbor_parser_init((uint8_t*)buffer, buffer_size, 0, &parser, &value);")
 for index, field in enumerate(spec.fields):
     if field.type.is_primitive_type() and not field.type.is_array:
         if field.type.type == "string":
             print("    msg->%s.capacity = buffer_size;" % field.name);
             print("    msg->%s.data = realloc(msg->%s.data, sizeof(char)*buffer_size);" % (field.name, field.name));
-            print("    ret += msg->%s.size = cbor_deserialize_byte_string(&stream, ret, msg->%s.data, msg->%s.capacity);" % (field.name, field.name, field.name));
+            print("    msg->%s.size = buffer_size;" % field.name);
+            //print("    ret += msg->%s.size = cbor_deserialize_byte_string(&stream, ret, msg->%s.data, msg->%s.capacity);" % (field.name, field.name, field.name));
+            print("    cbor_value_copy_byte_string(&value, (uint8_t*)(msg->%s.data), msg->%s.size, &value);" % (field.name, field.name));
+            print("    ret += msg->%s.size;" % (field.name));
         elif field.type.type == "int32":
-            print("    ret += cbor_deserialize_int(&stream, ret, &msg->%s);" % field.name);
+            //print("    ret += cbor_deserialize_int(&stream, ret, &msg->%s);" % field.name);
+            print("    cbor_value_get_int(&value, &msg->%s);" % field.name);
+            print("    cbor_value_advance_fixed(&value);");
+            print("    ret += sizeof(int);");
         elif field.type.type == "uint32":
-            print("    ret += cbor_deserialize_int(&stream, ret, (int*)&msg->%s);" % field.name);
+            //print("    ret += cbor_deserialize_int(&stream, ret, (int*)&msg->%s);" % field.name);
+            print("    cbor_value_get_int(&value, (int*)&msg->%s);" % field.name);
+            print("    cbor_value_advance_fixed(&value);");
+            print("    ret += sizeof(int);");
         elif field.type.type == "int64":
-            print("    ret += cbor_deserialize_int64_t(&stream, ret, &msg->%s);" % field.name);
+            //print("    ret += cbor_deserialize_int64_t(&stream, ret, &msg->%s);" % field.name);
+            print("    cbor_value_get_int64(&value, &msg->%s);" % field.name);
+            print("    cbor_value_advance_fixed(&value);");
+            print("    ret += sizeof(int64_t);");
         elif field.type.type == "uint64":
-            print("    ret += cbor_deserialize_uint64_t(&stream, ret, &msg->%s);" % field.name);
+            //print("    ret += cbor_deserialize_uint64_t(&stream, ret, &msg->%s);" % field.name);
+            print("    cbor_value_get_uint64(&value, &msg->%s);" % field.name);
+            print("    cbor_value_advance_fixed(&value);");
+            print("    ret += sizeof(uint64_t);");
         else:
             print("    (void)msg;// msg->%s : (%s) NOT SUPPORTED !" % (field.name, field.type.type));
     else:
