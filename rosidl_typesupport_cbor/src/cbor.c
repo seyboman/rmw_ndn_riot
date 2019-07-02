@@ -13,7 +13,7 @@
  * @author      Jana Cavojska <jana.cavojska9@gmail.com>
  */
 
-#include "rosidl_typesupport_cbor/cbor.h"
+#include "cbor.h"
 
 #include "byteorder.h"
 
