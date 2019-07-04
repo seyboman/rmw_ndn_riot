@@ -44,7 +44,6 @@ endif()
 
 set(MAKEFILE_INCLUDE_PATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/Makefile.include")
 file(APPEND "${MAKEFILE_INCLUDE_PATH}" "CFLAGS += -Drosidl_typesupport_cbor=rosidl_typesupport_c\n")
-file(APPEND "${MAKEFILE_INCLUDE_PATH}" "USEMODULE += cbor")
 
 ament_package(
   CONFIG_EXTRAS "rosidl_typesupport_cbor-extras.cmake.in"
