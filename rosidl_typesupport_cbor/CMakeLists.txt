@@ -24,7 +24,7 @@ ament_export_include_directories(include)
 
 ament_python_install_package(${PROJECT_NAME})
 
-add_library(${PROJECT_NAME} SHARED src/identifier.c)
+add_library(${PROJECT_NAME} SHARED src/identifier.c src/cbor.c)
 if(WIN32)
   target_compile_definitions(${PROJECT_NAME}
     PRIVATE "ROSIDL_TYPESUPPORT_cbor_BUILDING_DLL")
@@ -44,7 +44,6 @@ endif()
 
 set(MAKEFILE_INCLUDE_PATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/Makefile.include")
 file(APPEND "${MAKEFILE_INCLUDE_PATH}" "CFLAGS += -Drosidl_typesupport_cbor=rosidl_typesupport_c\n")
-file(APPEND "${MAKEFILE_INCLUDE_PATH}" "USEMODULE += cbor")
 
 ament_package(
   CONFIG_EXTRAS "rosidl_typesupport_cbor-extras.cmake.in"

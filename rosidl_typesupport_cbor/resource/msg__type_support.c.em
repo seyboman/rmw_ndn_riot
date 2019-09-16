@@ -20,11 +20,10 @@ function_prefix = '%s__%s__rosidl_typesupport_cbor' % (spec.base_type.pkg_name, 
 // providing offsetof()
 #include <stddef.h>
 
-#include <cbor.h>
-
 #include <@(spec.base_type.pkg_name)/@(subfolder)/@(get_header_filename_from_msg_name(spec.base_type.type))__rosidl_typesupport_cbor.h>
 #include "@(spec.base_type.pkg_name)/msg/rosidl_typesupport_cbor__visibility_control.h"
 
+#include "cbor.h"
 #include "rosidl_typesupport_cbor/field_types.h"
 #include "rosidl_typesupport_cbor/identifier.h"
 #include "rosidl_typesupport_cbor/message_introspection.h"
