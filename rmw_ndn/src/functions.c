@@ -127,7 +127,7 @@ rmw_send_response(
 }
 
 rmw_wait_set_t *
-rmw_create_wait_set(size_t max_conditions)
+rmw_create_wait_set(rmw_context_t * context, size_t max_conditions)
 {
   (void) max_conditions;
   DPUTS("rmw_create_waitset");

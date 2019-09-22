@@ -34,7 +34,7 @@ rmw_get_implementation_identifier(void)
 }
 
 rmw_ret_t
-rmw_init(void)
+rmw_init(const rmw_init_options_t * options, rmw_context_t * context)
 {
   DEBUG("rmw_init" "\n");
   return RMW_RET_OK;
@@ -42,6 +42,7 @@ rmw_init(void)
 
 rmw_node_t *
 rmw_create_node(
+        rmw_context_t * context,
         const char * name,
         const char * namespace_,
         size_t domain_id,
