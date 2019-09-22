@@ -34,7 +34,7 @@ rmw_node_get_graph_guard_condition(const rmw_node_t * node)
 }
 
 rmw_guard_condition_t *
-rmw_create_guard_condition(void)
+rmw_create_guard_condition(rmw_context_t * context)
 {
   DEBUG("rmw_create_guard_condition" "\n");
   rmw_guard_condition_t * ret = (rmw_guard_condition_t *)malloc(sizeof(rmw_guard_condition_t));
